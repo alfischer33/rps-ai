@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Play Rock, Paper, Scissors</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/Navigation-Clean.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.css') }}">
+</head>
+
+<body>
+    <nav class="navbar navbar-light navbar-expand-md text-center d-flex justify-content-center navigation-clean" style="background: linear-gradient(151deg, rgb(0,105,29) 0%, rgb(48,184,15));">
+        <div class="container">
+            <div class="col align-self-center">
+                <h2 class="text-center justify-content-center" style="font-size: calc(18px + ((170vw - 320px) / 82));margin: 0px;">Rock, Paper, Scissors</h2>
+                <h1 style="font-size: calc(10px + ((170vw - 320px) / 125));margin: 0px;">First to {{ winning_score }} is the champion</h1>
+            </div>
+        </div>
+    </nav>
+    <div class="row" style="background: linear-gradient(162deg, rgb(129,129,129), rgb(180,180,180)), #878787;width: 100%;margin: 0px;color: rgb(255,255,255);box-shadow: 0px -2px 20px rgb(0,0,0);">
+        <div class="col-auto justify-content-center" style="padding: 0;border-style: none;">
+            <div class="container d-flex justify-content-center align-items-center" style="padding: 0;width: 80px;height: 80px;margin: 0;background: #3d3d3d;border-style: solid;">
+                <div class="col" style="padding: 0px;">
+                    <h1 class="text-center" style="font-size: 50px;">{{p_wins}}</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-auto align-self-center" style="padding-right: 0px;">
+            <div class="container text-left" style="padding: 0;">
+                <h5>You</h5>
+            </div>
+        </div>
+        <div class="col" style="color: rgb(255,255,255);">
+            <div class="align-items-center"></div>
+        </div>
+        <div class="col-auto align-self-center" style="padding: 0px;padding-right: 5px;">
+            <div class="container text-left" style="padding: 0;">
+                <h5 class="text-right">Computer</h5>
+            </div>
+        </div>
+        <div class="col-auto justify-content-center" style="padding: 0;border-style: none;">
+            <div class="container d-flex justify-content-center align-items-center" style="padding: 0;width: 80px;height: 80px;margin: 0;background: #3d3d3d;border-style: solid;">
+                <div class="col" style="padding: 0px;">
+                    <h1 class="text-center" style="font-size: 50px;">{{c_wins}}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin: 0px;width: 100%;padding: 3%;">
+        <div class="col">
+            {% if recs|length > 0 %}
+            <div class="row d-flex" style="font-size: calc(16px + ((79vw - 320px) / 82));">
+                <div class="col-6" style="padding-right: 2%;padding-left: 4%;font-size: calc(16px + ((79vw - 320px) / 82));color: var(--gray);">
+                    <h6 class="text-center" style="font-size: calc(14px + ((79vw - 320px) / 82));color: rgb(111,111,111);">You played {{rps_nums[recs[-1].p1]}}</h6>
+                    {% if recs[-1].p1== 0 %}
+                    <img src="{{ url_for('static', filename='images/p_rock.jpg') }}" style="width: 100%;">
+                    {% elif recs[-1].p1== 1 %}
+                    <img src="{{ url_for('static', filename='images/p_paper.jpg') }}" style="width: 100%;">
+                    {% elif recs[-1].p1== 2 %}
+                    <img src="{{ url_for('static', filename='images/p_scissors.jpg') }}" style="width: 100%;">
+                    {% endif %}
+                </div>
+                <div class="col-6" style="padding-left: 2%;padding-right: 4%;">
+                    <h6 class="text-center" style="font-size: calc(14px + ((79vw - 320px) / 82));color: rgb(111,111,111);">The computer played {{rps_nums[recs[-1].p2]}}</h6>
+                    {% if recs[-1].p2== 0 %}
+                    <img src="{{ url_for('static', filename='images/c_rock.jpg') }}" style="width: 100%;">
+                    {% elif recs[-1].p2== 1 %}
+                    <img src="{{ url_for('static', filename='images/c_paper.jpg') }}" style="width: 100%;">
+                    {% elif recs[-1].p2== 2 %}
+                    <img src="{{ url_for('static', filename='images/c_scissors.jpg') }}" style="width: 100%;">
+                    {% endif %}
+                </div>
+                <div class="col">
+                    <h3 class="text-monospace text-center" style="font-size: calc(40px + ((80vw - 320px) / 30));">{{ 'YOU are' if p_wins >= winning_score else 'The COMPUTER is' if c_wins >= winning_score else 'As of right now, no one is' }} the champion!</h3>
+                    <form action="/" method="GET" class="d-flex justify-content-center">
+                        <button class="btn btn-success" type="submit" name='reset_game' value='reset' style="margin-right: Auto;margin-left: Auto;">Start a New Game</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-12 col-md-5" style="padding: 3%;">
+            {% if recs|length < 1 %}
+            <div class="col align-self-center">
+                <h2 class="text-center justify-content-center" style="font-size: calc(14px + ((170vw - 320px) / 120));margin: 0px;">Let's play!</h2>
+            </div>
+            {% else %}
+            <div class="table-responsive" style="font-size: 14px;width: 100%;">
+                <table class="table">
+                    <thead style="font-size: 10px;width: 100%;">
+                        <tr style="font-size: calc(11px + ((79vw - 320px) / 82));width: 100%;">
+                            <th class="text-center" style="width: 33%;padding: 5px;">Your Choice</th>
+                            <th class="text-center" style="width: 33%;padding: 5px;">Computer Choice</th>
+                            <th class="text-center" style="padding: 5px;">Win</th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: calc(-51px + ((100vw - 320px) / 70));">
+                        {% for rec in recs %}
+                        <tr style="font-size: calc(11px + ((79vw - 320px) / 82));margin: 0px;">
+                            <td class="text-center" style="padding: 0px;padding-top: 2%;padding-bottom: 2%;">{{ rps_nums[rec.p1] }}</td>
+                            <td class="text-center" style="padding: 0px;padding-top: 2%;padding-bottom: 2%;">{{ rps_nums[rec.p2] }}</td>
+                            <td class="text-center" style="padding: 0px;padding-top: 2%;padding-bottom: 2%;">{{ 'You' if rec.winner == 1 else 'Computer' if rec.winner==2 else 'Tie' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <section></section>
+    <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Rock, Paper, Scissors</title>
+{% endblock %}
+
+{% block body %}
+<h1 style="font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: xxx-large;">Rock, Paper, Scissors</h1>
+
+<div class='selection'>
+    <h3> What would you like the winning score to be?: </h3>
+    <form action="/" method="POST">
+        <input name="winning_score" id="winning_score" type="range" min="5" max="20" value="{{winning_score}}" class="form-control-range">
+        <br><h1 style="font-size: xxx-large;"><span id="winsc"></span> points </h1>
+        <input type="submit" value="Submit">
+    </form>
+</div>
+ 
+<script>
+    var slider1 = document.getElementById("winning_score");
+    var output1 = document.getElementById("winsc");
+    output1.innerHTML = slider1.value;
+    
+    slider1.oninput = function() {
+      output1.innerHTML = this.value;
+    }
+
+</script>
+{% endblock %}

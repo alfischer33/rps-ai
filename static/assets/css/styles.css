@@ -1,0 +1,33 @@
+.container2, .container-lg, .container-md, .container-sm, .container-xl {
+}
+
+.clearfix {
+}
+
+.navbar.navbar-light.navbar-expand-md.navigation-clean {
+}
+
+.col-score {
+}
+
+.col-score {
+  -ms-flex: 0 0 16.666667%;
+  flex: 0 0 16.666667%;
+  max-width: 16.666667%;
+}
+
+.text-right.d-flex.align-items-center {
+}
+
+thead {
+  font-size: medium;
+}
+
+.table-dark td, .table-dark th, .table-dark thead th {
+  font-size: x-small;
+}
+
+.text-center.justify-content-center {
+  font-family: monospace;
+}
+

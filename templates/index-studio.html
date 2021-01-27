@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Play Rock, Paper, Scissors</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/Navigation-Clean.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/Simple-Slider.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/styles.css') }}">
+</head>
+
+<body>
+    <nav class="navbar navbar-light navbar-expand-md text-center d-flex justify-content-center navigation-clean" style="background: linear-gradient(151deg, rgb(0,105,29) 0%, rgb(48,184,15));">
+        <div class="container">
+            <div class="col align-self-center">
+                <h2 class="text-center justify-content-center" style="font-size: calc(18px + ((170vw - 320px) / 82));margin: 0px;">Rock, Paper, Scissors</h2>
+            </div>
+        </div>
+    </nav>
+    
+    <div id="choice_panel">
+        <div class="row" style="margin: 5%;background: linear-gradient(163deg, rgb(126,126,126), rgb(215,215,215));border-radius: 10vw;box-shadow: 0px 0px 10px rgb(6,28,2);margin-top: 10%;">
+            <div class="col">
+                <div class="row d-lg-flex" style="border-width: 30px;border-style: none;">
+                    <div class="col" style="margin-top: 5%;margin-bottom: 0px;">
+                        <h3 class="text-center" style="font-size: calc(22px + ((79vw - 320px) / 50));margin: 0px;margin-bottom: 25px;color: #000000;">What would you like the winning score to be?</h3>
+                        <form action="/" method="POST" class="d-flex flex-grow-1 justify-content-center" style="padding-top: 0px;padding-bottom: 3%;margin-left: auto;margin-right: auto;max-width: 600px;width: 80%;">
+                            <div class="form-row">
+                                <div class="col-12 d-flex d-md-flex d-lg-flex justify-content-center justify-content-md-center justify-content-lg-center" style="padding: 2%;margin: 0px;width: 100%;">
+                                    <input name="winning_score" id="winning_score" class="bg-success border rounded-pill border-success custom-range" type="range" style="margin-left: auto;margin-right: auto;padding: 5px;border-width: 1px;border-style: none;" min="5" max="20" value="{{winning_score}}">
+                                </div>
+                                <div class="col-12 text-monospace text-center" style="padding: 0px;margin: 0px;width: 100%;">
+                                    <h1 style="font-size: calc(50px + ((79vw - 320px) / 50));color: var(--dark);margin: 0px;"><span id="winsc"></span></h1>
+                                </div>
+                                <div class="col-12 d-flex d-md-flex d-lg-flex justify-content-center justify-content-md-center justify-content-lg-center" style="padding: 2%;margin: 0px;" id="submit_button">
+                                    <button class="btn btn-success btn-lg text-center" type="submit" value="Submit" style="width: 30%;padding: 0px;height: 40px;" onclick="loading();">Submit</button>
+                                </div>
+                                
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" style="display: none;">
+        <div class="row" style="margin: 5%;background: linear-gradient(163deg, rgb(126,126,126), rgb(215,215,215));border-radius: 10vw;box-shadow: 0px 0px 10px rgb(6,28,2);margin-top: 10%;">
+            <div class="col">
+                <div class="row d-lg-flex" style="border-width: 30px;border-style: none;">
+                    <div class="col" style="margin-top: 5%;margin-bottom: 0px;">
+                        <h3 class="text-center" style="font-size: calc(22px + ((79vw - 320px) / 50));margin: 0px;margin-bottom: 25px;color: #000000;">Loading AI...</h3>
+                        <div class="row" style="margin-bottom: 5%;">
+                            <div class="col text-center">
+                                <div class="container"><span role="status" class="spinner-border" style="color: rgb(35,159,24);width: 50px;height: 50px;"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section></section>
+    <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/3.3.1/js/swiper.jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='assets/js/Simple-Slider.js') }}"></script>
+
+    <script>
+        var slider1 = document.getElementById("winning_score");
+        var output1 = document.getElementById("winsc");
+        output1.innerHTML = slider1.value;
+        
+        slider1.oninput = function() {
+          output1.innerHTML = this.value;
+        }
+    
+    </script>
+
+    <script type="text/javascript">
+        function loading(){
+            var x = document.getElementById("choice_panel");
+            var y = document.getElementById("loading");
+            
+            x.style.display = "none"
+            y.style.display = "block"
+                  
+        }
+    </script>
+    
+</body>
+
+</html>

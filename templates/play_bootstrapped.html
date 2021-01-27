@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Rock, Paper, Scissors</title>
+{% endblock %}
+
+{% block body %}
+<div class="jumbotron text-center bg-secondary" style="margin-bottom: 30px;">
+    <div class='container'>
+        <div class="row">
+            <div class="col-4">
+                <div class="container">
+                    <span class="border">
+                        <div class="card" style="width: 100%">
+                            <div class="card-title"><h1 class='display-4'>You</h1></div>
+                            <div class="card-text"><h1>{{p_wins}}</h1></div>
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div class="col-4">
+                <h1 class='display-3'>Rock, Paper, Scissors</h1>
+                <h3 class="heading">First to {{ winning_score }} is the champion</h3>
+            </div>
+            <div class="col-4">
+                <div class="container">
+                    <span class="border">
+                        <div class="card" style="width: 100%">
+                            <div class="card-title"><h1 class='display-4'>Comp.</h1></div>
+                            <div class="card-text"><h1>{{c_wins}}</h1></div>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='row'>
+    <div class='col-sm-7'>
+        <div class="container">
+            <span class="border">
+                <h3> Rock, Paper, or Scissors? </h3>
+                <form action="/play/{{winning_score}}" method="POST">
+                    <button type='submit' class='btn btn-secondary btn-lg' name='choice' value=0>Rock</button>
+                    <button type='submit' class='btn btn-secondary btn-lg' name='choice' value=1>Paper</button>
+                    <button type='submit' class='btn btn-secondary btn-lg' name='choice' value=2>Scissors</button>
+                </form>
+            </span>
+        </div>
+        {% if recs|length > 0 %}
+        <div class="row">
+            <div class="col-6">
+                <h5>You played {{rps_nums[recs[-1].p1]}}</h5>
+                {% if recs[-1].p1== 0 %}
+                <img src="{{ url_for('static', filename='images/p_rock.jpg') }}" width= '100%'>
+                {% elif recs[-1].p1== 1 %}
+                <img src="{{ url_for('static', filename='images/p_paper.jpg') }}" width= '100%'>
+                {% elif recs[-1].p1== 2 %}
+                <img src="{{ url_for('static', filename='images/p_scissors.jpg') }}" width= '100%'>
+                {% endif %}
+            </div>
+            <div class="col-6">
+                <h5>The computer played {{rps_nums[recs[-1].p2]}}</h5>
+                {% if recs[-1].p2== 0 %}
+                <img src="{{ url_for('static', filename='images/c_rock.jpg') }}" style="width: 100%;">
+                {% elif recs[-1].p2== 1 %}
+                <img src="{{ url_for('static', filename='images/c_paper.jpg') }}" style="width: 100%;">
+                {% elif recs[-1].p2== 2 %}
+                <img src="{{ url_for('static', filename='images/c_scissors.jpg') }}" style="width: 100%;">
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div style="width: 100%; margin-top: 40px;">
+            <h2>{{ 'You win!' if recs[-1].winner == 1 else 'The computer wins!' if recs[-1].winner == 2 else 'Tie game!' }}</h2>
+        </div>
+        {% endif %}
+    </div>
+    <div class='col-sm-5'>
+        <h2>Game Record</h2>
+        {% if recs|length < 1 %}
+        <text>Let's play!</text>
+        {% else %}
+        <table class="table">
+            <tr>
+                <th> Your choice </th>
+                <th> Computer choice </th>
+                <th> Winner </th>
+            </tr>
+            {% for rec in recs %}
+            <tr>
+                <td>{{ rps_nums[rec.p1] }}</td>
+                <td>{{ rps_nums[rec.p2] }}</td>
+                <td>{{ 'You' if rec.winner == 1 else 'Computer' if rec.winner==2 else 'Tie' }} </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div> 
+</div>
+<script>
+    var slider1 = document.getElementById("winning_score");
+    var output1 = document.getElementById("winsc");
+    output1.innerHTML = slider1.value;
+    
+    slider1.oninput = function() {
+      output1.innerHTML = this.value;
+    }
+
+</script>
+{% endblock %}

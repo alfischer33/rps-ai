@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Rock, Paper, Scissors</title>
+{% endblock %}
+
+{% block body %}
+<h1 style="font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: xxx-large;">Rock, Paper, Scissors</h1>
+
+<h3>First to {{ winning_score }} is the champion</h3>
+<div style="width: 80%; margin: 1%; margin-left: auto; margin-right: auto; padding: 15px; border-style: groove; border-radius: 50px;">
+    <table style="table-layout: fixed; border: 0px; margin-left: auto; margin-right: auto;">
+        <tr>
+            <th style="border: 0px; text-align: right; font-size: xx-large;">YOU</th>
+            <th style="font-size: xxx-large;">{{p_wins}}</th>
+            <th style="font-size: xxx-large;">{{c_wins}}</th>
+            <th style="border: 0px; text-align: left; font-size: xx-large; ">COMPUTER</th>
+        </tr>
+    </table>
+</div>
+
+<div style='width: 100%;'>
+    <div class='game' style='width: 60%; float: left'>
+        <div>
+            <h3> Rock, Paper, or Scissors? </h3>
+            <form action="/play/{{winning_score}}" method="POST">
+                <button type='submit' name='choice' value=0>Rock</button>
+                <button type='submit' name='choice' value=1>Paper</button>
+                <button type='submit' name='choice' value=2>Scissors</button>
+            </form>
+        </div>
+        {% if recs|length > 0 %}
+        <div style="display: flex;">
+            <div style="width: 50%; float: left;">
+                <h3>You played {{rps_nums[recs[-1].p1]}}</h3>
+                {% if recs[-1].p1== 0 %}
+                <img src="{{ url_for('static', filename='images/p_rock.jpg') }}" width= '100%'>
+                {% elif recs[-1].p1== 1 %}
+                <img src="{{ url_for('static', filename='images/p_paper.jpg') }}" width= '100%'>
+                {% elif recs[-1].p1== 2 %}
+                <img src="{{ url_for('static', filename='images/p_scissors.jpg') }}" width= '100%'>
+                {% endif %}
+            </div>
+            <div style="width: 50%; float: right;">
+                <h3>The computer played {{rps_nums[recs[-1].p2]}}</h3>
+                {% if recs[-1].p2== 0 %}
+                <img src="{{ url_for('static', filename='images/c_rock.jpg') }}" width= '100%'>
+                {% elif recs[-1].p2== 1 %}
+                <img src="{{ url_for('static', filename='images/c_paper.jpg') }}" width= '100%'>
+                {% elif recs[-1].p2== 2 %}
+                <img src="{{ url_for('static', filename='images/c_scissors.jpg') }}" width= '100%'>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div style="width: 100%; margin-top: 40px;">
+            <h2>{{ 'You win!' if recs[-1].winner == 1 else 'The computer wins!' if recs[-1].winner == 2 else 'Tie game!' }}</h2>
+        </div>
+        {% endif %}
+    </div>
+    <div class='record' style='width: 39%; float: right; margin-right: 1%;'>
+        <h2>Game Record</h2>
+        {% if recs|length < 1 %}
+        <text>Let's play!</text>
+        {% else %}
+        <table>
+            <tr>
+                <th> Your choice </th>
+                <th> Computer choice </th>
+                <th> Winner </th>
+            </tr>
+            {% for rec in recs %}
+            <tr>
+                <th>{{ rps_nums[rec.p1] }}</th>
+                <th>{{ rps_nums[rec.p2] }}</th>
+                <th>{{ 'You' if rec.winner == 1 else 'Computer' if rec.winner==2 else 'Tie' }} </th>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div> 
+</div>
+<script>
+    var slider1 = document.getElementById("winning_score");
+    var output1 = document.getElementById("winsc");
+    output1.innerHTML = slider1.value;
+    
+    slider1.oninput = function() {
+      output1.innerHTML = this.value;
+    }
+
+</script>
+{% endblock %}

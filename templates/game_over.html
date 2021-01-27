@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Rock, Paper, Scissors</title>
+{% endblock %}
+
+{% block body %}
+<h1 style="font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: xxx-large;">Rock, Paper, Scissors</h1>
+
+<div style="width: 80%; margin: 1%; margin-left: auto; margin-right: auto; border-style: groove; border-radius: 50px; padding-bottom: 20px;">
+    <h1>{{ 'YOU are' if p_wins >= winning_score else 'The COMPUTER is' if c_wins >= winning_score else 'As of right now, no one is' }} the champion!</h1>
+    <table style="table-layout: fixed; border: 0px; margin-left: auto; margin-right: auto;">
+        <tr>
+            <th style="border: 0px; text-align: right; font-size: xx-large;">YOU</th>
+            <th style="font-size: xxx-large;">{{p_wins}}</th>
+            <th style="font-size: xxx-large;">{{c_wins}}</th>
+            <th style="border: 0px; text-align: left; font-size: xx-large; ">COMPUTER</th>
+        </tr>
+    </table>
+</div>
+
+<div style="margin-bottom: 3%;">
+    <form action="/" method="GET">
+        <button type='submit' name='reset_game' value='reset'>Start a New Game</button>
+    </form>
+</div>
+
+<div style='width: 100%;'>
+    <h2>Game Record</h2>
+    {% if recs|length < 1 %}
+    <text>Looks like we don't have your game record :(</text>
+    {% else %}
+    <table>
+        <tr>
+            <th> Your choice </th>
+            <th> Computer choice </th>
+            <th> Winner </th>
+        </tr>
+        {% for rec in recs %}
+        <tr>
+            <th>{{ rps_nums[rec.p1] }}</th>
+            <th>{{ rps_nums[rec.p2] }}</th>
+            <th>{{ 'You' if rec.winner == 1 else 'Computer' if rec.winner==2 else 'Tie' }} </th>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    
+</div>
+<script>
+    var slider1 = document.getElementById("winning_score");
+    var output1 = document.getElementById("winsc");
+    output1.innerHTML = slider1.value;
+    
+    slider1.oninput = function() {
+      output1.innerHTML = this.value;
+    }
+
+</script>
+{% endblock %}
