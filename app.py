@@ -50,8 +50,8 @@ def index():
     if request.method == 'POST':
         winning_score = request.form['winning_score']
 
-        build_historical_dtclf()
-        build_nn()
+        #build_historical_dtclf()
+        #build_nn()
 
         return render_template('play-studio.html', winning_score=winning_score, p_wins = 0, c_wins=0)
     else:

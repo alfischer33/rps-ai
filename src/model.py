@@ -1,15 +1,12 @@
-# build AI decision function that returns the decision and the model used to make it, then build a 
-# record dataframe that includes (p1, p2, winner, model)
-
 from src.game import beats, loses_to
 from src.database import query_to_df
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
 import numpy as np
 from random import randint
 from joblib import dump, load
-import tensorflow as tf
-import keras
+import tflite_runtime.interpreter as tflite
 
 # implement model scoring
 def score_model(model, record, drop_first=1):        
@@ -59,6 +56,7 @@ def build_xrecord(record):
     """builds xrecord that includes choice vectors"""
     xrecord = record.copy()
     xrecord = xrecord.drop(['game_id', 'timestamp', 'ip_address'], axis=1, errors='ignore')
+    xrecord = xrecord.reset_index(drop=False)
 
     xrecord['p1_vector_from_prev'] = None
     xrecord['p2_vector_from_prev'] = None
@@ -76,18 +74,10 @@ def build_xrecord(record):
 
 def build_xrecord_onehot(record):
   xrecord_onehot = build_xrecord(record)
-  xrecord_onehot = xrecord_onehot.drop('round', axis=1, errors='ignore')
 
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['p1'],3).numpy(), columns=['p1_0', 'p1_1', 'p1_2']), left_index=True, right_index=True).drop(['p1'], axis=1)
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['p2'],3).numpy(), columns=['p2_0', 'p2_1', 'p2_2']), left_index=True, right_index=True).drop(['p2'], axis=1)
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['winner'],3).numpy(), columns=['winner_0', 'winner_1', 'winner_2']), left_index=True, right_index=True).drop(['winner'], axis=1)
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['model0'],3).numpy(), columns=['model0_0', 'model0_1', 'model0_2']), left_index=True, right_index=True).drop(['model0'], axis=1)
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['model1'],3).numpy(), columns=['model1_0', 'model1_1', 'model1_2']), left_index=True, right_index=True).drop(['model1'], axis=1)
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['model2'],3).numpy(), columns=['model2_0', 'model2_1', 'model2_2']), left_index=True, right_index=True).drop(['model2'], axis=1)
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['model3'],3).numpy(), columns=['model3_0', 'model3_1', 'model3_2']), left_index=True, right_index=True).drop(['model3'], axis=1)
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['model4'],3).numpy(), columns=['model4_0', 'model4_1', 'model4_2']), left_index=True, right_index=True).drop(['model4'], axis=1)
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['model5'],3).numpy(), columns=['model5_0', 'model5_1', 'model5_2']), left_index=True, right_index=True).drop(['model5'], axis=1)
-  xrecord_onehot = xrecord_onehot.merge(pd.DataFrame(tf.one_hot(xrecord_onehot['model_choice'],6).numpy(), columns=['model_choice_0', 'model_choice_1', 'model_choice_2','model_choice_3','model_choice_4','model_choice_5']), left_index=True, right_index=True).drop(['model_choice'], axis=1)
+  enc = OneHotEncoder(categories=[range(3),range(3),range(3),range(3),range(3),range(3),range(3),range(3),range(3),range(6)])
+  df = pd.DataFrame(enc.fit_transform(xrecord_onehot[['p1', 'p2', 'winner',	'model0',	'model1',	'model2',	'model3',	'model4',	'model5', 'model_choice']]).toarray(), columns=[name[:-2] for name in enc.get_feature_names(['p1', 'p2', 'winner',	'model0',	'model1',	'model2',	'model3',	'model4',	'model5', 'model_choice'])])
+  xrecord_onehot = xrecord_onehot.merge(df, left_index=True, right_index=True).drop(['p1', 'p2', 'winner','model0',	'model1',	'model2',	'model3',	'model4',	'model5', 'model_choice'], axis=1)
   return xrecord_onehot
 
 def get_Xy(record):
@@ -133,8 +123,9 @@ def get_nn_Xy(record, length=5):
 
     xrecord_onehot = build_xrecord_onehot(record)
     print(xrecord_onehot)
-    xrecord_onehot['valid_round'] = xrecord_onehot.index > length
-    xrecord_onehot['valid_round'] = xrecord_onehot['valid_round'].astype(float)
+    
+    #xrecord_onehot['valid_round'] = xrecord_onehot.index > length
+    #xrecord_onehot['valid_round'] = xrecord_onehot['valid_round'].astype(float)
 
     # builds X and y starting on round 8 based off of summary statistics of the previous 5 rounds
     X = np.ndarray((len(record)-2-length,length, xrecord_onehot.shape[1]))
@@ -148,6 +139,7 @@ def get_nn_Xy(record, length=5):
     this_round = X[-1]
     X = X[:-1]
     y = y[:-1].astype('int')
+    print(f'this_round: {this_round}')
 
     return X,y,this_round
 
@@ -170,13 +162,11 @@ def model0(record):
 
 def model1(record):
     """ Vector-based choice based on past three rounds """
-    print(f'model0 len(record) = {len(record)}')
     if len(record) > 1:
         if len(record) > 5:
             vectors = []
             for i in range(1,5):
                 vectors.append(vectorize(record['p1'].iloc[-i], record['p1'].iloc[-i-1]))
-            print(f'vectors for model1 = {vectors}')
             vector = pd.Series(vectors).value_counts().index[0]
         else:
             vector = vectorize(record['p1'].iloc[-1], record['p1'].iloc[-2])
@@ -223,8 +213,31 @@ def model4(record):
 
     X,y,this_round = get_nn_Xy(record)
 
-    model = keras.models.load_model("nn_clf")
-    guess = np.argmax(model.predict(this_round.reshape(1,5,39)))
+    # model = keras.models.load_model("nn_clf")
+    # guess = np.argmax(model.predict(this_round.reshape(1,5,39)))
+
+    
+    # Load the TFLite model and allocate tensors.
+    interpreter = tflite.Interpreter(model_path="nn_clf.tflite")
+    interpreter.allocate_tensors()
+
+    # Get input and output tensors.
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+
+
+
+    # Test the model on random input data.
+    input_shape = input_details[0]['shape']
+    input_data = this_round.astype('float32').reshape(1,5,39)
+    interpreter.set_tensor(input_details[0]['index'], input_data)
+
+    interpreter.invoke()
+
+    # The function `get_tensor()` returns a copy of the tensor data.
+    # Use `tensor()` in order to get a pointer to the tensor.
+    output_data = interpreter.get_tensor(output_details[0]['index'])
+    guess = np.argmax(output_data)
 
     return beats(guess)
 
