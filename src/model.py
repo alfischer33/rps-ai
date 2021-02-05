@@ -7,7 +7,6 @@ import pandas as pd
 import numpy as np
 from random import randint
 from joblib import dump, load
-import tflite_runtime.interpreter as tflite
 
 # implement model scoring
 def score_model(model, record, drop_first=1):        
