@@ -2,6 +2,7 @@ from src.game import beats, loses_to
 from src.database import query_to_df
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.neural_network import MLPClassifier
 import pandas as pd
 import numpy as np
 from random import randint
@@ -56,7 +57,10 @@ def build_xrecord(record):
     """builds xrecord that includes choice vectors"""
     xrecord = record.copy()
     xrecord = xrecord.drop(['game_id', 'timestamp', 'ip_address'], axis=1, errors='ignore')
-    xrecord = xrecord.reset_index(drop=False)
+    
+    if 'round' not in xrecord.columns:
+        xrecord = xrecord.reset_index(drop=False)
+        xrecord = xrecord.rename(columns={'index':'round'})
 
     xrecord['p1_vector_from_prev'] = None
     xrecord['p2_vector_from_prev'] = None
@@ -72,12 +76,16 @@ def build_xrecord(record):
         xrecord['p1_next_choice'].iloc[i] = xrecord['p1'].iloc[i+1]
     return xrecord.astype(float, errors='ignore')
 
-def build_xrecord_onehot(record):
+def build_xrecord_onehot(record, length=5):
   xrecord_onehot = build_xrecord(record)
 
   enc = OneHotEncoder(categories=[range(3),range(3),range(3),range(3),range(3),range(3),range(3),range(3),range(3),range(6)])
   df = pd.DataFrame(enc.fit_transform(xrecord_onehot[['p1', 'p2', 'winner',	'model0',	'model1',	'model2',	'model3',	'model4',	'model5', 'model_choice']]).toarray(), columns=[name[:-2] for name in enc.get_feature_names(['p1', 'p2', 'winner',	'model0',	'model1',	'model2',	'model3',	'model4',	'model5', 'model_choice'])])
   xrecord_onehot = xrecord_onehot.merge(df, left_index=True, right_index=True).drop(['p1', 'p2', 'winner','model0',	'model1',	'model2',	'model3',	'model4',	'model5', 'model_choice'], axis=1)
+  
+  xrecord_onehot['valid_round'] = xrecord_onehot['round'] >= length
+  xrecord_onehot['valid_round'] = xrecord_onehot['valid_round'].astype(float)
+  
   return xrecord_onehot
 
 def get_Xy(record):
@@ -116,30 +124,28 @@ def get_Xy(record):
 
     return X,y,this_round
 
-def get_nn_Xy(record, length=5):
+def get_nn_Xy(record, length=7):
     """
     Builds an three dimensional array X that will input a 2 dimensional array for each value of y, which represents the player's next choice
     """
 
-    xrecord_onehot = build_xrecord_onehot(record)
-    print(xrecord_onehot)
-    
-    #xrecord_onehot['valid_round'] = xrecord_onehot.index > length
-    #xrecord_onehot['valid_round'] = xrecord_onehot['valid_round'].astype(float)
+    xrecord = build_xrecord_onehot(record, length=length)
+    print('xrecord')
+    print(xrecord)
 
-    # builds X and y starting on round 8 based off of summary statistics of the previous 5 rounds
-    X = np.ndarray((len(record)-2-length,length, xrecord_onehot.shape[1]))
+    # builds X and y based off of summary statistics of the previous (length) rounds
+    X = np.ndarray((len(record)-length,length, xrecord.shape[1]-1))
     y = pd.Series(dtype=int)
-    drop = []
+    this_round = np.ndarray((1,length, xrecord.shape[1]-1))
 
-    for i in range(length+1, len(record)-1):
-      X[i-length-1] = xrecord_onehot[i-length:i].to_numpy()
-      y = y.append(pd.Series({'index':xrecord_onehot['p1_next_choice'].iloc[i]}), ignore_index=True)
-    
-    this_round = X[-1]
+    # append a (length x rows) matrix to each X index, and its corresponding next round value to y
+    for i in range(length, len(record)):
+      X[i-length] = xrecord[i-length+1:i+1].drop('p1_next_choice',axis=1).to_numpy()
+      y = y.append(pd.Series({'index':xrecord['p1_next_choice'].iloc[i]}), ignore_index=True)
+
+    this_round[0] = X[-1]
     X = X[:-1]
     y = y[:-1].astype('int')
-    print(f'this_round: {this_round}')
 
     return X,y,this_round
 
@@ -194,7 +200,7 @@ def model2(record):
 
 
 def model3(record):
-    """ Chooses the choice that would beat the player's least frequent recent choice. Combine and remake to choose least chosen option of last 3 """
+    """ Chooses the choice that would beat the player's least frequent recent choice"""
     if len(record['p1']) > 4:
         least_freq = record['p1'].value_counts().iloc[-5:].index[-1]
         choice = beats(least_freq)
@@ -206,44 +212,22 @@ def model3(record):
 
 
 def model4(record):
-    """ builds a decision tree from record to predict player's next choice and returns the 
-    choice to beat it"""
+    """ Uses a pickled tensorflow neural network model trained with historical data to predict next choice"""
     if len(record) < 8:
         return int(0)
 
     X,y,this_round = get_nn_Xy(record)
 
-    # model = keras.models.load_model("nn_clf")
-    # guess = np.argmax(model.predict(this_round.reshape(1,5,39)))
+    nn_clf = load('nn_clf.joblib')
+    curr = sk_flatten(this_round)
 
-    
-    # Load the TFLite model and allocate tensors.
-    interpreter = tflite.Interpreter(model_path="nn_clf.tflite")
-    interpreter.allocate_tensors()
-
-    # Get input and output tensors.
-    input_details = interpreter.get_input_details()
-    output_details = interpreter.get_output_details()
-
-
-
-    # Test the model on random input data.
-    input_shape = input_details[0]['shape']
-    input_data = this_round.astype('float32').reshape(1,5,39)
-    interpreter.set_tensor(input_details[0]['index'], input_data)
-
-    interpreter.invoke()
-
-    # The function `get_tensor()` returns a copy of the tensor data.
-    # Use `tensor()` in order to get a pointer to the tensor.
-    output_data = interpreter.get_tensor(output_details[0]['index'])
-    guess = np.argmax(output_data)
+    guess = int(nn_clf.predict(curr))
 
     return beats(guess)
 
 
 def model5(record):
-    """ uses an sklearn model trained with historical data to predict next choice"""
+    """ uses an sklearn decision tree model trained with historical data to predict next choice"""
     if len(record) < 5:
         return int(0)
 
@@ -287,43 +271,35 @@ def build_historical_dtclf():
     
     return
 
+def sk_flatten(X):
+        return X.reshape(X.shape[0], (X.shape[1]*X.shape[2]))
+
 def build_nn():    
     """ Builds the neural network classifier for model 4 from historical data """
     query = """
-    SELECT 1 AS record, game_id, n, p1, p2, winner, model_choice, model0, model1, model2, model3, model4
-    FROM record_test 
-    UNION 
-    SELECT 2 AS record, game_id, n, p1, p2, winner, model_choice, model0, model1, model2, model3, model4
-    FROM record_test2 
-    UNION 
-    SELECT 3 AS record, game_id, round, p1, p2, winner, model_choice, model0, model1, model2, model3, model4
-    FROM record_test3
-    UNION 
-    SELECT 4 AS record, game_id, round, p1, p2, winner, model_choice, model0, model1, model2, model3, model4
-    FROM record_test4
-    UNION 
-    SELECT 5 AS record, game_id, round, p1, p2, winner, model_choice, model0, model1, model2, model3, model4
+    SELECT *
     FROM record
     """
 
-    #record = query_to_df(query).set_index(['record', 'game_id', 'n']).sort_index()
-    record = pd.read_csv('rps-record122.csv', index_col='Unnamed: 0')
+    record = query_to_df(query)
+    print('Record')
+    print(record)
+    #record = pd.read_csv('rps-record122.csv', index_col='Unnamed: 0')
+    
+    X,y,this_round = get_nn_Xy(record, length=7)
 
-    X,y,this_round = get_nn_Xy(record)
+    X_flat = sk_flatten(X)
 
-    model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(5, X.shape[2])),  # input layer (1)                      
-    keras.layers.Dense(40, activation='elu', kernel_regularizer=keras.regularizers.l2(0.005)),
-    keras.layers.Dense(20, activation='relu', kernel_regularizer=keras.regularizers.l2(0.005)),
-    keras.layers.Dense(3, activation='softmax') ])
+    nn_clf = MLPClassifier(hidden_layer_sizes=(50,10),
+                        activation='relu',
+                        solver='adam', 
+                        learning_rate='adaptive', learning_rate_init=0.003, 
+                        max_iter=200, 
+                        alpha=0.1)
 
-    model.compile(optimizer=keras.optimizers.Adamax(),
-                loss='sparse_categorical_crossentropy',
-                metrics=['accuracy'])
+    nn_clf.fit(X_flat, y)
 
-    model.fit(X, y, epochs=300)
-
-    model.save("nn_clf")
+    dump(nn_clf, 'nn_clf.joblib')
 
     print('nn file updated')
     
@@ -332,12 +308,10 @@ def build_nn():
 #currently not in use
 def always_changing(record): return len(record) > 5 and False not in [record['p1'].iloc[-i] != record['p1'].iloc[-i-1] for i in range(1,6)]
 
-#need to be updated to priotize most recent rounds' scores over older rounds
 def highest_score_model(model_scores): return int(model_scores.index(max(model_scores)))
 
 
 
-### move this into its own file
 def computer_choice(record):
     """ Makes a choice given the record of previous rounds """
 
@@ -358,8 +332,8 @@ def computer_choice(record):
         model_scores.append(score_model(2,record,drop_first=1))
         model_scores.append(score_model(3,record,drop_first=1))
     if len(record) >= 5:
-        model_scores.append(score_model(4,record, drop_first=7)+0.2)
-        model_scores.append(score_model(5,record, drop_first=5)+0.2)
+        model_scores.append(score_model(4,record, drop_first=7)+0.15)
+        model_scores.append(score_model(5,record, drop_first=5)+0.15)
         
     
     if len(record) < 1:
@@ -371,7 +345,7 @@ def computer_choice(record):
     
     print(f'Model Choices: {model_choices}')
     print(f'Model Scores: {model_scores}')
-    print("Model {} chosen.".format(model))
+    print(f"Model {model} chosen.")
     
     # next: build a ensembler that aggregates model suggestions weighted by their scores to choose
     

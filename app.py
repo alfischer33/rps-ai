@@ -83,7 +83,6 @@ def index1(winning_score, record=record):
         # get round variables
         p2, model_choice, model_choices = computer_choice(record)
         p1 = int(request.form['choice'])
-        print(type(p1))
         winner = play_rps(p1,p2)
 
         #put round variables into db and df
