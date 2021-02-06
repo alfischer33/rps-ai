@@ -1,7 +1,7 @@
 # Rock Paper Scissors AI
 An AI webapp that can beat human users in Rock, Paper, Scissors over 60% of the time using various models and ensembling methods trained on both game-level and stored historical data.
 
-![app_interface](rps-webapp-screenshot.jpg)
+![app_interface](static/images/rps-webapp-screenshot.jpg)
 
 # App
 
@@ -24,10 +24,10 @@ My goal was to have the AI win over 55% of the time. Currently, the AI's win per
 ![win margins](rps_win_margin_by_game.png)
 
 The top performing model overall is Model 5, which has a made the winning choice 203 times, the losing choice 168 times, and the tying choice 193 times. 
-![full model performance](rps_full_model_performance.png)
+![full model performance](static/images/rps_full_model_performance.png)
 
 The top performing model based only on the rounds in which it was chosen by the ensembler is Model 2, which has won 37 times against the user, lost 19 times, and tied 31 times. 
-![chosen model performance](rps_chosen_model_performance.png)
+![chosen model performance](static/images/rps_chosen_model_performance.png)
 
 
 ### Flask
@@ -54,7 +54,8 @@ model5: Uses a decision tree model trained with historical data to predict the p
 
 ### Ensembling
 Every round, the computer_choice function chooses which model it will use as the AI’s choice for the coming round. This is done by scoring the performance of each model given the current game record. 
-score = sum(j2/n2) to the nth round, where j = n if computer won, j = -n if computer lost, and j = 0 if the game was a tie.
+
+![scoring](static/images/rps_scoring_equation.jpg)
 
 This scoring system is exponential in order to prioritize recent model performance, making it responsive to strategies that a player might be using. Firstly, this allows the model to overcome simple patterns that a player may be using, such as playing the same choice constantly or switching choices in a repeated pattern. Secondly, it ensures that the same model is not consistently repeated, which would allow for the player to figure out how it worked and beat it. If the player did figure out a model, it would lose and quickly earn a negative score due to the priority that exponential scoring places on the most recent rounds. And finally, it allows the models that may more accurately predict the player’s thinking to be used more frequently. The decision tree and neural network models are given a +0.15 boost to their scores in order to give these sophisticated models precedence in the decision making process. 
 
