@@ -31,25 +31,23 @@ The top performing model based only on the rounds in which it was chosen by the 
 
 
 ### Flask
-The app is written in flask and contains a preliminary screen to choose what the winning score will be, the main gameplay page, and a Game Over page in which users can view the game results and start a new game. sdxxx
-
-In its current MVP version, the app can only support one player at a time.
+The app is written in flask and contains a preliminary screen to choose what the winning score will be, the main gameplay page, and a Game Over page in which users can view the game results and start a new game. In its current MVP version, the app can only support one player at a time.
 
 
 
 # AI
 ### Models
-model0: Chooses the choice that would lose to or beat the player's last choice. Based on whether a player is changing their answers or not in the past three rounds.
+model0: Chooses the choice that would lose to or beat the player's last choice. Beats a player that doesn't repeat choices.
 
-model1: Vector-based choice based on past three rounds
+model1: Vector-based choice based on past three rounds. Beats a player that chooses in a pattern.
 
-model2: Chooses the choice that would beat the player's most frequent recent choice. Based on repeated choices
+model2: Chooses the choice that would beat the player's most frequent recent choice. Beats a player that repeats choices.
 
-model3: Chooses the choice that would beat the player's least frequent recent choice. 
+model3: Chooses the choice that would beat the player's least frequent recent choice. Beats a player that changes their choice constantly.
 
-model4: Uses a pickled tensorflow neural network model trained with historical data to predict next choice
+model4: Uses a neural network model trained with historical data to predict the player's next choice.
 
-model5: Uses an sklearn decision tree model trained with historical data to predict next choice
+model5: Uses a decision tree model trained with historical data to predict the player's next choice.
 
 
 
