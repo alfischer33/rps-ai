@@ -1,5 +1,5 @@
 # Rock Paper Scissors AI
-An AI webapp that can beat human users in Rock, Paper, Scissors over 60% of the time using various models and ensembling methods trained on both game-level and stored historical data.
+A full stack python Flask artificial intelligence project capable of beating the human user over 60% of the time using a custom scoring system to ensemble six models (naïve logic-based, decision tree, neural network) trained on both game-level and stored historical data in AWS RDS Cloud SQL database.
 
 ![app_interface](static/images/rps-webapp-screenshot.jpg)
 
