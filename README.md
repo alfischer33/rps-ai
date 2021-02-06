@@ -1,7 +1,7 @@
 # Rock Paper Scissors AI
 An AI webapp that can beat human users in Rock, Paper, Scissors over 60% of the time using various models and ensembling methods trained on both game-level and stored historical data.
 
-
+![app_interface](rps-webapp-screenshot.jpg)
 
 # App
 
@@ -21,10 +21,14 @@ With this data, I began to implement machine learning models alongside the naive
 ### Statistics
 
 My goal was to have the AI win over 55% of the time. Currently, the AI's win percentage sits at 61.5%. 
+![win margins](rps_win_margin_by_game.png)
 
-The top performing model overall is Model 5, which has a made the winning choice 203 times, the losing choice 193 times, and the tying choice 168 times. 
+The top performing model overall is Model 5, which has a made the winning choice 203 times, the losing choice 168 times, and the tying choice 193 times. 
+![full model performance](rps_full_model_performance.png)
 
-The top performing model based only on the rounds in which it was chosen by the ensembler is model2, which has won 37 times against the user, lost 19 times, and tied 31 times. 
+The top performing model based only on the rounds in which it was chosen by the ensembler is Model 2, which has won 37 times against the user, lost 19 times, and tied 31 times. 
+![chosen model performance](rps_chosen_model_performance.png)
+
 
 ### Flask
 The app is written in flask and contains a preliminary screen to choose what the winning score will be, the main gameplay page, and a Game Over page in which users can view the game results and start a new game. sdxxx
