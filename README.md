@@ -23,7 +23,7 @@ With this data, I began to implement machine learning models alongside the naive
 ### Statistics
 
 My goal was to have the AI win over 55% of the time. Currently, the AI's win percentage sits at 61.5%. 
-![win margins](rps_win_margin_by_game.png)
+![win margins](static/images/rps_win_margin_by_game.png)
 
 The top performing model overall is Model 5, which has a made the winning choice 203 times, the losing choice 168 times, and the tying choice 193 times. 
 ![full model performance](static/images/rps_full_model_performance.png)
