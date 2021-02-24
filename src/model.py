@@ -15,7 +15,7 @@ def score_model(model, record, drop_first=1):
     n = len(record) - drop_first
     
     if n < 1:
-        return 1.0
+        return -1.0
 
     # creates unweighted score
     wins = 0
