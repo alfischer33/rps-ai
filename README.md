@@ -3,7 +3,7 @@ A full stack python Flask artificial intelligence project capable of beating the
 
 [Play the game here](https://rps-ai-game.herokuapp.com/)
 
-[<img src="https://imgur.com/sVIZVZo.jpg">](https://rps-ai-game.herokuapp.com/)
+[<img src="https://imgur.com/sVIZVZo.jpg" height=500px>](https://rps-ai-game.herokuapp.com/)
 
 
 # Overview
