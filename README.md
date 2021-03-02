@@ -8,7 +8,7 @@ A full stack python Flask artificial intelligence project capable of beating the
 
 # Overview
 ### Problem Statement
-Rock Paper Scissors caught my attention for an AI project because it seems impossible to get an edge in the game. These days, it is easy to assume that a computer can beat you in chess, because it can harness all of its computing power to see all possible outcomes and choose the ones that benefit it. Rock Paper Scissors, on the other hand, is commonly used in place of a coin toss to solve disputes because the winner seems random. My theory though, was that **humans can’t actually make random decisions**, and that if an AI could learn to understand the ways in which humans make their choices over the course of a series of matches, even if the human was trying to behave randomly, then the AI would be able to significantly exceed 33% accuracy in guessing the player’s decisions. 
+Rock Paper Scissors caught my attention for an AI project because it seems impossible to get an edge in the game. These days, it is easy to assume that a computer can beat you in chess, because it can harness all of its computing power to see all possible outcomes and choose the ones that benefit it. Rock Paper Scissors, on the other hand, is commonly used in place of a coin toss to solve disputes because the winner seems random. My theory though, was that **humans can’t actually make random decisions**, and that if an AI could learn to understand the ways in which humans make their choices over the course of a series of matches, even if the human was trying to behave randomly, then the AI would be able to significantly exceed 33% accuracy in guessing the player’s decisions. My target was to see if I could make the AI aware enough of human behavior to win over 55% of games. 
 
 ### Terms
 When writing about the project, I will use these terms in the following ways:
@@ -77,7 +77,7 @@ Beginning the game using the naive models helps to solve the cold start problem,
 
 ### Statistics
 
-My goal was to have the AI win over 55% of the time. Currently, the AI’s win percentage sits at 61.8%. 
+My goal was to have the AI win over 55% of the time. **Currently, the AI’s win percentage sits at 61.8%.**
 ![win margins](https://imgur.com/HwdHglR.png)
 
 To analyze how the models perform, we will look at two datasets: one that shows the result of the model’s choice in every round against what the player actually chose that round, and the next showing how the models actually performed against the player’s choice on rounds that the ensembler chose that model. As can be seen below, the top performing model on all rounds (judging by win / loss ratio) is Model 4, which has made the winning choice 203 times and the losing choice 168 times. The second best is the decision tree model at Model 5, which has made the winning choice 273 times and the losing choice 223 times. Note: these model scores are only calculated for the most recent iteration of the model, thus the lower total counts for the neural network at model 4. 
