@@ -30,7 +30,7 @@ In its current MVP version, the app can only support one player at a time.
 ### Ensembling
 Every round, the computer_choice function chooses which model it will use as the AI’s choice for the coming round. This is done by scoring the performance of each model given the current game record. 
 
-![scoring](static/images/rps_scoring_equation.jpg)
+![scoring](https://imgur.com/oPYXR5a.jpg)
 
 This scoring system is exponential in order to prioritize recent model performance, making it responsive to strategies that a player might be using. Firstly, this allows the model to overcome simple patterns that a player may be using, such as playing the same choice constantly or switching choices in a repeated pattern. Secondly, it ensures that the same model is not consistently repeated, which would allow for the player to figure out how it worked and beat it. If the player did figure out a model, it would lose and quickly earn a negative score due to the priority that exponential scoring places on the most recent rounds. And finally, it allows the models that may more accurately predict the player’s thinking to be used more frequently. The decision tree and neural network models are given a +0.15 boost to their scores in order to give these sophisticated models precedence in the decision making process. 
 
@@ -70,13 +70,13 @@ Beginning the game using the naive models helps to solve the cold start problem,
 ### Statistics
 
 My goal was to have the AI win over 55% of the time. Currently, the AI's win percentage sits at 61.5%. 
-![win margins](static/images/rps_win_margin_by_game.png)
+![win margins](https://imgur.com/HwdHglR.png)
 
 The top performing model overall is Model 5, which has a made the winning choice 203 times, the losing choice 168 times, and the tying choice 193 times. 
-![full model performance](static/images/rps_full_model_performance.png)
+![full model performance](https://imgur.com/f9EaFVI.png)
 
 The top performing model based only on the rounds in which it was chosen by the ensembler is Model 2, which has won 37 times against the user, lost 19 times, and tied 31 times. 
-![chosen model performance](static/images/rps_chosen_model_performance.png)
+![chosen model performance](https://imgur.com/cy5bAeu.png)
 
 
 
