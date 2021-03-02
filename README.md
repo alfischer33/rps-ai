@@ -69,14 +69,31 @@ Beginning the game using the naive models helps to solve the cold start problem,
 
 ### Statistics
 
-My goal was to have the AI win over 55% of the time. Currently, the AI's win percentage sits at 61.5%. 
+My goal was to have the AI win over 55% of the time. Currently, the AI’s win percentage sits at 61.8%. 
 ![win margins](https://imgur.com/HwdHglR.png)
 
-The top performing model overall is Model 5, which has a made the winning choice 203 times, the losing choice 168 times, and the tying choice 193 times. 
+To analyze how the models perform, we will look at two datasets: one that shows the result of the model’s choice in every round against what the player actually chose that round, and the next showing how the models actually performed against the player’s choice on rounds that the ensembler chose that model. As can be seen below, the top performing model on all rounds (judging by win / loss ratio) is Model 4, which has made the winning choice 203 times and the losing choice 168 times. The second best is the decision tree model at Model 5, which has made the winning choice 273 times and the losing choice 223 times. Note: these model scores are only calculated for the most recent iteration of the model, thus the lower total counts for the neural network at model 4. 
 ![full model performance](https://imgur.com/f9EaFVI.png)
 
-The top performing model based only on the rounds in which it was chosen by the ensembler is Model 2, which has won 37 times against the user, lost 19 times, and tied 31 times. 
+Looking only at the rounds in which models were chosen by the ensembler, the top performing model is also the neural network Model 4 with 28 wins and 16 losses, followed closely by Model 2 with 59 wins and 37 losses. The naive models 0-2 can be seen to have a much higher win/loss ratio when they are chosen than they do across all rounds, which means that the ensemble is choosing the correct times to play the models in general. Comparing the two figures, the ensembler seems to use Model 2 especially effectively, while Model 3 actually experiences a much lower win/loss ratio when it is chosen by the ensembler, meaning that it is not being selected at the correct times.
 ![chosen model performance](https://imgur.com/cy5bAeu.png)
+
+### Takeaways
+
+This AI has been able to outperform my expectations by having two important characteristics. Firstly, it is capable of beating a player with its naive models when they fall into a simple pattern, and by its complex models when they might be following a more complex, but still measurable, decision making process. And secondly, it is itself hard to predict. As the person who programmed it, I still cannot predict what its choices will be when I am playing against it; a fact that came to be especially after introducing the machine learning models. Despite the fact that there is no randomness whatsoever in its decision making after the first round, it is nonetheless sufficiently beyond the player’s ability to calculate what the AI will choose.
+
+The ensemble of models that powers this AI is an example of a framework that can be used for AI decision making in real time where data bear weak correlation to each other and most recent trends need to be prioritized over averages of the whole dataset.
+
+
+### Future ideas: 
+
+Some ideas to improve the AI: 
+- Hosting competitions to build a larger dataset for training and validation of new ideas
+- Test an ensembler using a weighted average of model choices given their scores
+- Cluster player behavior into categories (ex. calculating, risky, random, etc.) and then train ML models to each cluster
+- Build a meta layer above the ensembler that learns to enact multi-round strategies through reinforcement learning
+
+Another possibility is to turn the app into a platform where data scientists or students can compete in building Game AI and trying to beat their peers’ AI and move up a leaderboard.
 
 
 
