@@ -7,26 +7,34 @@ A full stack python Flask artificial intelligence project capable of beating the
 
 
 # Overview
-Although at first glance, Rock Paper Scissors might seem like a low-level game, I actually came to think of it in the opposite way when conceiving this AI. These days, it is easy to assume that a computer can beat you in chess, because it can harness all of its computing power to see all possible outcomes and choose the ones that benefit it. Rock Paper Scissors, on the other hand, is a game that seems impossible to be good at. In theory, decisions can be made at random and have no less likelihood of winning than a well thought-through decision. My theory though, was that humans can’t actually make random decisions, and that if an AI could learn to understand the ways in which humans make their choices, even if the human is trying to do so in a random pattern, then the AI would be able to significantly exceed 33% accuracy in guessing the player’s decisions. 
+### Problem Statement
+Rock Paper Scissors caught my attention for an AI project because it seems impossible to get an edge in the game. These days, it is easy to assume that a computer can beat you in chess, because it can harness all of its computing power to see all possible outcomes and choose the ones that benefit it. Rock Paper Scissors, on the other hand, is commonly used in place of a coin toss to solve disputes because the winner seems random. My theory though, was that humans can’t actually make random decisions, and that if an AI could learn to understand the ways in which humans make their choices over the course of a series of matches, even if the human was trying to behave randomly, then the AI would be able to significantly exceed 33% accuracy in guessing the player’s decisions. 
+
+### Terms
+When speaking about the project, I will use these terms in the following ways:
+Player: Human user of the app
+Computer: AI
+Choice: Rock, Paper, or Scissors
+Round: One iteration including a player choice, computer choice, and outcome
+Game: A collection of rounds ending when either the player or computer’s score reaches the winning score defined at the start of the game
+
+### First Iteration
 
 I started out by simply hard coding the different ways that I could think of that humans would make decisions: choosing the same thing over and over, choosing in a pattern, or trying to make the choice that they hadn’t used in a while. I built models that would predict the player’s next choice if they were using any of these methods, and then used logic-based criteria to try and decide which model fit the player’s behavior based on a record of the previous rounds. This was the first stage of the project, ran in a jupyter notebook, and initially played pretty well. It would fall into certain patterns easily, however, and could be reliably tricked by a savvy player. 
 
-
 At this point, I realized that there were a lot of improvements that I could make and got excited to flesh the project out more. I built a Flask webapp and hosted it on Heroku so that I could share it with friends. I then built a cloud database on AWS to capture the data from every time that it was played, knowing that this data could give me the power to build much more sophisticated models.
 
-I began a process of analysing the performance of my models and tweaking them. I also replaced the simple logic-based model selection process with a new scoring system to make the decision of which model would be used to make the next round’s choice, which I’ll go into more detail about below. I created a mobile-friendly app using bootstrap, improved the design for a more engaging user experience, and then sent the link to my network to play against and collect data from.
+I began a process of analysing the performance of my models and tweaking them. I also replaced the simple logic-based model selection process with a new ensembling system which I’ll go into more detail about below. I created a mobile-friendly app using bootstrap, improved the design for a more engaging user experience, and then sent the link out on social media for my friends and family to play against and provide insights. With this data, I began to implement machine learning models alongside the naive logic-based ones, which I will also go into more detail about below. At this point, progress slowed as the app’s scope increased, and I had to work through package dependency, data quality, backend, and model exportation issues. However, I continued to iteratively update the app functionality in response to data analysis I was performing and new ideas I continued to have to improve it. These days, when I play against the AI, even knowing everything about how it works, I have a hard time beating it. 
 
-With this data, I began to implement machine learning models alongside the naive logic-based ones. I created two decision trees, one that trained and predicted only based on game-level data, and one that trained at the start of the game on the full historical data set to make its predictions. At this point, progress slowed as the app’s scope increased, and I had to work through package dependency, data quality, backend, and model exportation issues. However, I continued to iteratively update the app functionality in response to data analysis I was performing and new ideas I continued to have to improve it. In most recent changes, I’ve added a neural network model to replace the locally-trained decision tree which was performing poorly, and updated the scoring system to its current exponential state in order to prioritize recent rounds and ensure unpredictability. These days, even when I play against the AI, I have a hard time beating it. 
- 
-
-# Stack
-The app is written in Python with Flask, is hosted on Heroku, reads and writes to an AWS RDS hosted PostgreSQL database, and the UI was written with Bootstrap HTML. Data is managed in pandas, and the ML models were built and tested with scikit-learn and Tensorflow. 
-
-In its current MVP version, the app can only support one player at a time.
-
+In its current MVP state, the app can only support one player at a time.
 
 
 # AI
+### Data
+![data](https://imgur.com/VLaCkMt.jpg)
+
+Data is recorded during the course of the game and kept in a local SQLAlchemy table that is passed to the models every turn to aid them in their respective decision making processes. It includes all of the above columns except for game_id and ip_address. At the end of every game, data is sent to an AWS cloud hosted database with those two columns appended, which can be accessed to assess model performance and train ML models.
+
 ### Ensembling
 Every round, the computer_choice function chooses which model it will use as the AI’s choice for the coming round. This is done by scoring the performance of each model given the current game record. 
 
