@@ -1,6 +1,8 @@
 # Rock Paper Scissors AI
 A full stack python Flask artificial intelligence project capable of beating the human user over 60% of the time using a custom scoring system to ensemble six models (naïve logic-based, decision tree, neural network) trained on both game-level and stored historical data in AWS RDS Cloud SQL database.
 
+Watch my video presentation of the project [here](https://youtu.be/uB5MhvgGKH0)
+
 [Play the game here](https://rps-ai-game.herokuapp.com/)
 
 [<img src="https://imgur.com/sVIZVZo.jpg" height=500px>](https://rps-ai-game.herokuapp.com/)
