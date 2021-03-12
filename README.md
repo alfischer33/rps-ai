@@ -12,6 +12,7 @@ Watch my video presentation of the project [here](https://youtu.be/uB5MhvgGKH0),
 # Overview
 ### Problem Statement
 [Video Clip here](https://youtu.be/uB5MhvgGKH0?t=188)
+
 Rock Paper Scissors caught my attention for an AI project because it seems impossible to get an edge in the game. These days, it is easy to assume that a computer can beat you in chess, because it can harness all of its computing power to see all possible outcomes and choose the ones that benefit it. Rock Paper Scissors, on the other hand, is commonly used in place of a coin toss to solve disputes because the winner seems random. My theory though, was that **humans can’t actually make random decisions**, and that if an AI could learn to understand the ways in which humans make their choices over the course of a series of matches, even if the human was trying to behave randomly, then the AI would be able to significantly exceed 33% accuracy in guessing the player’s decisions. My target was to see if I could make the AI aware enough of human behavior to win over 55% of games. 
 
 
@@ -26,6 +27,7 @@ When writing about the project, I will use these terms in the following ways:
 
 ### First Iteration
 [Video clip here](https://youtu.be/uB5MhvgGKH0?t=345)
+
 I started out by simply hard coding the different ways that I could think of that humans would make decisions: choosing the same thing over and over, choosing in a pattern, or trying to make the choice that they hadn’t used in a while. I built models that would predict the player’s next choice if they were using any of these methods, and then used logic-based criteria to try and decide which model fit the player’s behavior based on a record of the previous rounds. This was the first stage of the project, ran in a jupyter notebook, and initially played pretty well. It would fall into certain patterns easily, however, and could be reliably tricked by a savvy player. 
 
 At this point, I realized that there were a lot of improvements that I could make and got excited to flesh the project out more. I built a **Flask webapp** and hosted it on **Heroku** so that I could share it with friends. I then built a **cloud database on AWS** to capture the data from every time that it was played, knowing that this data could give me the power to build much more sophisticated models.
@@ -43,6 +45,7 @@ Data is recorded during the course of the game and kept in a local SQLAlchemy ta
 
 ### Ensembling
 [Video clip here](https://youtu.be/uB5MhvgGKH0?t=682)
+
 Every round, the computer_choice function chooses which model it will use as the AI’s choice for the coming round. This is done by scoring the performance of each model given the current game record. 
 
 ![scoring](https://imgur.com/oPYXR5a.jpg)
@@ -54,6 +57,7 @@ This scoring system is exponential in order to prioritize recent model performan
 
 ### Models
 [Video clip here](https://youtu.be/uB5MhvgGKH0?t=1029)
+
 Each of the models takes a different approach to understanding how a player will make their next choice. The first four models make very specific assumptions about the way a player is making choices, and thus are only applicable in the context of a player acting in that given way.
 
 **Model 0**: Chooses the choice that would lose to or beat the player's previous choice. Based on the assumption that a player will continue to either not repeat or to repeat previous choices.
