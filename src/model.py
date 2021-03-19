@@ -23,9 +23,9 @@ def score_model(model, record, drop_first=1):
     for j in range(drop_first,len(record)):
         if n == 1 and j == 0:
             return int(-1)
-        if record.iloc[j, 4+model] == beats(record['p1'].iloc[j]):
+        if record.iloc[j][f'model{model}'] == beats(record['p1'].iloc[j]):
             model_record.append(j**2)
-        elif record.iloc[j, 4+model] == loses_to(record['p1'].iloc[j]):
+        elif record.iloc[j][f'model{model}'] == loses_to(record['p1'].iloc[j]):
             model_record.append(-j**2)
         w_max = w_max + j**2
     weighted_model_score = np.sum(model_record) / w_max
