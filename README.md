@@ -1,15 +1,22 @@
 # Rock Paper Scissors AI
 A full stack python Flask artificial intelligence project capable of beating the human user over 60% of the time using a custom scoring system to ensemble six models (naïve logic-based, decision tree, neural network) trained on both game-level and stored historical data in AWS RDS Cloud SQL database.
 
+
 [Play the game here](https://rps-ai-game.herokuapp.com/)
 
 [<img src="https://imgur.com/sVIZVZo.jpg" height=500px>](https://rps-ai-game.herokuapp.com/)
 
 
+Watch my video presentation of the project [here](https://youtu.be/uB5MhvgGKH0), or jump to the video by section below
+
 # Overview
 ### Problem Statement
+[Video Clip here](https://youtu.be/uB5MhvgGKH0?t=188)
+
 Rock Paper Scissors caught my attention for an AI project because it seems impossible to get an edge in the game. These days, it is easy to assume that a computer can beat you in chess, because it can harness all of its computing power to see all possible outcomes and choose the ones that benefit it. Rock Paper Scissors, on the other hand, is commonly used in place of a coin toss to solve disputes because the winner seems random. My theory though, was that **humans can’t actually make random decisions**, and that if an AI could learn to understand the ways in which humans make their choices over the course of a series of matches, even if the human was trying to behave randomly, then the AI would be able to significantly exceed 33% accuracy in guessing the player’s decisions. My target was to see if I could make the AI aware enough of human behavior to win over 55% of games. 
 
+
+ 
 ### Terms
 When writing about the project, I will use these terms in the following ways:
 - Player: Human user of the app
@@ -19,6 +26,7 @@ When writing about the project, I will use these terms in the following ways:
 - Game: A collection of rounds ending when either the player or computer’s score reaches the winning score defined at the start of the game
 
 ### First Iteration
+[Video clip here](https://youtu.be/uB5MhvgGKH0?t=345)
 
 I started out by simply hard coding the different ways that I could think of that humans would make decisions: choosing the same thing over and over, choosing in a pattern, or trying to make the choice that they hadn’t used in a while. I built models that would predict the player’s next choice if they were using any of these methods, and then used logic-based criteria to try and decide which model fit the player’s behavior based on a record of the previous rounds. This was the first stage of the project, ran in a jupyter notebook, and initially played pretty well. It would fall into certain patterns easily, however, and could be reliably tricked by a savvy player. 
 
@@ -36,16 +44,19 @@ In its current MVP state, the app can only support one player at a time.
 Data is recorded during the course of the game and kept in a local SQLAlchemy table that is passed to the models every turn to aid them in their respective decision making processes. It includes all of the above columns except for game_id and ip_address. At the end of every game, data is sent to an AWS cloud hosted database with those two columns appended, which can be accessed to assess model performance and train ML models.
 
 ### Ensembling
+[Video clip here](https://youtu.be/uB5MhvgGKH0?t=682)
+
 Every round, the computer_choice function chooses which model it will use as the AI’s choice for the coming round. This is done by scoring the performance of each model given the current game record. 
 
 ![scoring](https://imgur.com/oPYXR5a.jpg)
 
-This scoring system is exponential in order to prioritize recent model performance, making it responsive to strategies that a player might be using. Firstly, this allows the model to overcome simple patterns that a player may be using, such as playing the same choice constantly or switching choices in a repeated pattern. Secondly, it ensures that the same model is not consistently repeated, which would allow for the player to figure out how it worked and beat it. If the player did figure out a model, it would lose and quickly earn a negative score due to the priority that exponential scoring places on the most recent rounds. And finally, it allows the models that may more accurately predict the player’s thinking to be used more frequently. The decision tree and neural network models are given a +0.15 boost to their scores in order to give these sophisticated models precedence in the decision making process. 
+This scoring system is quadratic in order to prioritize recent model performance, making it responsive to strategies that a player might be using. Firstly, this allows the model to overcome simple patterns that a player may be using, such as playing the same choice constantly or switching choices in a repeated pattern. Secondly, it ensures that the same model is not consistently repeated, which would allow for the player to figure out how it worked and beat it. If the player did figure out a model, it would lose and quickly earn a negative score due to the priority that quadratic scoring places on the most recent rounds. And finally, it allows the models that may more accurately predict the player’s thinking to be used more frequently. The decision tree and neural network models are given a +0.15 boost to their scores in order to give these sophisticated models precedence in the decision making process. 
 
 ![backend](https://imgur.com/JHbpxPj.jpg)
 
 
 ### Models
+[Video clip here](https://youtu.be/uB5MhvgGKH0?t=1029)
 
 Each of the models takes a different approach to understanding how a player will make their next choice. The first four models make very specific assumptions about the way a player is making choices, and thus are only applicable in the context of a player acting in that given way.
 
@@ -71,12 +82,12 @@ The decision tree and neural network models are given a +0.15 boost to their sco
 Beginning the game using the naive models helps to solve the cold start problem, where the AI knows nothing yet about the player who it is starting a new game against. (The only use of a random number generator is for the very first round, as it is necessary to make the AI not entirely predictable, otherwise random numbers were entirely avoided in the building of this app.) The initial AI is therefore doing the best it can by its logic-based models until it gets a better understanding of the player and can turn on its more intelligent models. 
 
 ### Ensembling Model Selection Visualization
-
+[Video clip here](https://youtu.be/uB5MhvgGKH0?t=1426)
 ![model_selection](https://i.imgur.com/2txVzKz.png)
 
 
 ### Statistics
-
+[Video clip here](https://youtu.be/uB5MhvgGKH0?t=1544)
 My goal was to have the AI win over 55% of the time. **Currently, the AI’s win percentage sits at 61.8%.**
 ![win margins](https://imgur.com/HwdHglR.png)
 
