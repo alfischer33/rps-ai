@@ -17,23 +17,12 @@ def score_model(model, record, drop_first=1):
     if n < 1:
         return -1.0
 
-    # creates unweighted score
-    wins = 0
-    losses = 0
-    for j in range(drop_first,len(record)):
-        if record.iloc[j, 4+model] == beats(record.loc[j, 'p1']):
-            wins = wins + 1
-        elif record.iloc[j, 4+model] == loses_to(record.loc[j, 'p1']):
-            losses = losses + 1
-    #print(f"Wins: {wins}, Losses: {losses}, Ties: {ties}")
-    model_score = (wins - losses) / (n)
-
     # creates a weighted model score that prioritizes recency
     model_record = []
     w_max = 0
     for j in range(drop_first,len(record)):
         if n == 1 and j == 0:
-            return model_score
+            return int(-1)
         if record.iloc[j, 4+model] == beats(record['p1'].iloc[j]):
             model_record.append(j**2)
         elif record.iloc[j, 4+model] == loses_to(record['p1'].iloc[j]):
