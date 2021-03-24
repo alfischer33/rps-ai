@@ -22,7 +22,7 @@ def score_model(model, record, drop_first=1):
     w_max = 0
     for j in range(drop_first,len(record)):
         if n == 1 and j == 0:
-            return int(-1)
+            return float(-1.0)
         if record.iloc[j][f'model{model}'] == beats(record['p1'].iloc[j]):
             model_record.append(j**2)
         elif record.iloc[j][f'model{model}'] == loses_to(record['p1'].iloc[j]):
@@ -307,6 +307,7 @@ def computer_choice(record):
     model_choices = []
     model_scores = []
     
+    #append model choices
     model_choices.append(model0(record))
     model_choices.append(model1(record))
     model_choices.append(model2(record))
@@ -314,29 +315,27 @@ def computer_choice(record):
     model_choices.append(model4(record))
     model_choices.append(model5(record))
 
+    #append model scores
     model_scores.append(score_model(0,record, drop_first=0))
     if len(record) >= 2:
         model_scores.append(score_model(1,record,drop_first=1))
         model_scores.append(score_model(2,record,drop_first=1))
         model_scores.append(score_model(3,record,drop_first=1))
     if len(record) >= 5:
-        model_scores.append(score_model(4,record, drop_first=7)+0.15)
-        model_scores.append(score_model(5,record, drop_first=5)+0.15)
+        model_scores.append(score_model(4,record, drop_first=7))
+        model_scores.append(score_model(5,record, drop_first=5))
         
-    
+    #ensure that first round is model 0, assign highest score model
     if len(record) < 1:
         model = 0
-    elif record['winner'].iloc[-1] == 2:
-        model = int(record['model_choice'].iloc[-1])
     else:
         model = highest_score_model(model_scores)
     
     print(f'Model Choices: {model_choices}')
     print(f'Model Scores: {model_scores}')
     print(f"Model {model} chosen.")
-    
-    # next: build a ensembler that aggregates model suggestions weighted by their scores to choose
-    
+        
+    #make model choice
     choice = model_choices[model]
     
     return choice, model, model_choices
